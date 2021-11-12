@@ -1,0 +1,1 @@
+# All assignments and projects are in their respective folders
