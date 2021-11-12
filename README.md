@@ -1,8 +1,8 @@
-Create a new txt file called **tracker_info.txt** which contains IP and port of tracker and must be in same directory as client and tracker
+Create a new txt file called **tracker_info.txt** which contains IP and port of tracker and must be in same directory as client and tracker  
+
+Main files are on /root/P2P  
 
 to use SHA1 library in c  (for ubuntu)
-
-
 
 * Install OpenSSL library -** sudo apt-get install libssl-dev**
 * If other distro, use corresponding library for the distro in step 1
