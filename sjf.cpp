@@ -14,7 +14,6 @@ struct process
     int P_ID;     //process ID
     int AT;       //arrival time
     int BT;       //burst time
-    int Priority; //priority time
     int CT;       //completion time
     int TAT;      //turn around time
     int WT;       //waiting time
@@ -24,11 +23,11 @@ bool cmp_min(process &one, process &two)
 {
     if (one.AT == two.AT)
     {
-        if (one.Priority == two.Priority)
+        if (one.BT == two.BT)
         {
             return one.P_ID < two.P_ID;
         }
-        return one.Priority < two.Priority; //smaller priority gets high prefereeeence
+        return one.BT < two.BT; 
     }
     return one.AT < two.AT;
 }
@@ -36,7 +35,7 @@ struct CompareProcessMin
 {
     bool operator()(process const &p1, process const &p2)
     {
-        if (p1.Priority == p2.Priority)
+        if (p1.BT == p2.BT)
         {
             if (p1.AT == p2.AT)
             {
@@ -44,7 +43,7 @@ struct CompareProcessMin
             }
             return p1.AT > p2.AT;
         }
-        return p1.Priority > p2.Priority; // small number Higher Priority
+        return p1.BT > p2.BT;
     }
 };
 int main()
@@ -59,10 +58,10 @@ int main()
     ofstream wt1;
     ofstream ct1;
     
-    tat1.open("pri_non_pre_tat1.csv", fstream::out);
-    rt1.open("pri_non_pre_rt1.csv", fstream::out);
-    wt1.open("pri_non_pre_wt1.csv", fstream::out);
-    ct1.open("pri_non_pre_ct1.csv", fstream::out);
+    tat1.open("sjf_tat1.csv", fstream::out);
+    rt1.open("sjf_rt1.csv", fstream::out);
+    wt1.open("sjf_wt1.csv", fstream::out);
+    ct1.open("sjf_ct1.csv", fstream::out);
     for (int i = 0; i < 100; ++i)
     {
         info.clear();
@@ -72,7 +71,10 @@ int main()
             temp.P_ID = info.size();
             temp.AT = rand() % 100;
             temp.BT = rand() % 100;
-            temp.Priority = rand() % 100;
+
+            // cin >> temp.AT;
+            // cin >> temp.BT;
+            
             temp.WT = 0;
             temp.TAT = 0;
             temp.RT = 0;
