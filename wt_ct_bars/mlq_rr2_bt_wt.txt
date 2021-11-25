@@ -1,8 +1,0 @@
-Iapache,1,0
-Ibash,4,0
-Imozilla,8,0
-Ccpu,2,0
-Cgcc,4,17
-Cspice,6,0
-Cmysql,3,5
-Csim,7,7

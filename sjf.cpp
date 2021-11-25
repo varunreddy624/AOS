@@ -92,7 +92,7 @@ void handleCPUBound(vector<process>& info,ofstream& line_graph_stream,ofstream& 
         printf("%d\t%s\t\t%d\t%d\t%d\t%d\t%d\n",ans[i].P_ID,ans[i].name,ans[i].AT,ans[i].BT,ans[i].CT,ans[i].WT,ans[i].TAT);
         line_graph_stream << ans[i].P_ID << ",";
         line_graph_stream << ans[i].name << ",";    
-        line_graph_stream << 1 << ",";
+        line_graph_stream << 0 << ",";
         line_graph_stream << ans[i].RT << ",";
         line_graph_stream << ans[i].WT << ",";
         line_graph_stream << ans[i].CT << ",";
@@ -100,7 +100,7 @@ void handleCPUBound(vector<process>& info,ofstream& line_graph_stream,ofstream& 
 
         gant_chart_stream << ans[i].P_ID << ",";
         gant_chart_stream << ans[i].name << ",";
-        gant_chart_stream << 1 << ",";
+        gant_chart_stream << 0 << ",";
         gant_chart_stream << ans[i].AT << ",";
         gant_chart_stream << ans[i].CT << "\n";
 
@@ -136,7 +136,7 @@ void handleIOBound(vector<process>& info,ofstream& line_graph_stream,ofstream& g
         // printf("%d\t%s\t\t\t%d\t%d\t%d\t%d\t%d\n",info[i].P_ID,info[i].name,info[i].AT,info[i].BT,info[i].CT,info[i].WT,info[i].TAT);
         line_graph_stream << info[i].P_ID << ",";
         line_graph_stream << info[i].name << ",";    
-        line_graph_stream << 0 << ",";
+        line_graph_stream << 1 << ",";
         line_graph_stream << info[i].RT << ",";
         line_graph_stream << info[i].WT << ",";
         line_graph_stream << info[i].CT << ",";
@@ -144,7 +144,7 @@ void handleIOBound(vector<process>& info,ofstream& line_graph_stream,ofstream& g
 
         gant_chart_stream << info[i].P_ID << ",";
         gant_chart_stream << info[i].name << ",";
-        gant_chart_stream << 0 << ",";
+        gant_chart_stream << 1 << ",";
         gant_chart_stream << info[i].AT << ",";
         gant_chart_stream << info[i].CT << "\n";
 
@@ -159,19 +159,13 @@ void handleIOBound(vector<process>& info,ofstream& line_graph_stream,ofstream& g
 
 int main(int argc,char* argv[])
 {
-    #ifndef ONLINE_JUDGE
-        freopen("input.txt","r",stdin);
-        freopen("output.txt","w",stdout);
-        freopen("err.txt","w",stderr);
-    #endif
-
     vector<process> cpu_bound_processes,io_bound_processes;
     ofstream line_graph_stream,gant_chart_stream,stack_bar_graph_stream;
     
     process temp;
     
     line_graph_stream.open("sjf_line.csv", fstream::out);
-    gant_chart_stream.open("sjf_gant.csv",fstream::out);
+    gant_chart_stream.open("sjf_gantt.csv",fstream::out);
     stack_bar_graph_stream.open("sjf_stack_bar.csv",fstream::out);
     
 

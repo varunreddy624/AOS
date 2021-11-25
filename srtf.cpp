@@ -129,7 +129,7 @@ void handleCPUBound(vector<process>& info,ofstream& line_graph_stream,ofstream& 
         printf("%d\t%d\t%d\t%d\t%d\t%d\n",ans[i].P_ID,ans[i].AT,ans[i].BT,ans[i].CT,ans[i].WT,ans[i].TAT);
         line_graph_stream << ans[i].P_ID << ",";
         line_graph_stream << ans[i].name << ",";    
-        line_graph_stream << 1 << ",";
+        line_graph_stream << 0 << ",";
         line_graph_stream << ans[i].CT << ",";
         line_graph_stream << ans[i].BT << ",";
         line_graph_stream << ans[i].WT << ",";
@@ -144,7 +144,7 @@ void handleCPUBound(vector<process>& info,ofstream& line_graph_stream,ofstream& 
         // cout << tempvector[i][0] << " " << tempvector[i][1] << " " << tempvector[i][2] << "\n";
         gant_chart_stream << tempvector[i][0] << ",";
         gant_chart_stream << info[procidToInfoInd[tempvector[i][0]]].name << ",";
-        gant_chart_stream << 1 << ",";
+        gant_chart_stream << 0 << ",";
         gant_chart_stream << tempvector[i][1] << ",";
         gant_chart_stream << tempvector[i][2] << "\n";
     }
@@ -176,7 +176,7 @@ void handleIOBound(vector<process>& info,ofstream& line_graph_stream,ofstream& g
         // printf("%d\t%s\t\t\t%d\t%d\t%d\t%d\t%d\n",info[i].P_ID,info[i].name,info[i].AT,info[i].BT,info[i].CT,info[i].WT,info[i].TAT);
         line_graph_stream << info[i].P_ID << ",";
         line_graph_stream << info[i].name << ",";    
-        line_graph_stream << 0 << ",";
+        line_graph_stream << 1 << ",";
         line_graph_stream << info[i].CT << ",";
         line_graph_stream << info[i].BT << ",";
         line_graph_stream << info[i].WT << ",";
@@ -184,7 +184,7 @@ void handleIOBound(vector<process>& info,ofstream& line_graph_stream,ofstream& g
 
         gant_chart_stream << info[i].P_ID << ",";
         gant_chart_stream << info[i].name << ",";
-        gant_chart_stream << 0 << ",";
+        gant_chart_stream << 1 << ",";
         gant_chart_stream << info[i].AT << ",";
         gant_chart_stream << info[i].CT << "\n";
 
@@ -210,7 +210,7 @@ int main(int argc,char* argv[])
     process temp;
     
     line_graph_stream.open("srtf_line.csv", fstream::out);
-    gant_chart_stream.open("srtf_gant.csv",fstream::out);
+    gant_chart_stream.open("srtf_gantt.csv",fstream::out);
     stack_bar_graph_stream.open("srtf_stack_bar.csv",fstream::out);
     
 
