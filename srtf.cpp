@@ -56,7 +56,7 @@ struct CompareProcessMin
     }
 };
 
-void handleCPUBound(vector<process>& info,ofstream& line_graph_stream,ofstream& gant_chart_stream){
+void handleCPUBound(vector<process>& info,ofstream& line_graph_stream,ofstream& gant_chart_stream,ofstream& stack_bar_graph_stream){
     int num_process = info.size();
 
     unordered_map<int,int> procidToInfoInd;
@@ -134,6 +134,10 @@ void handleCPUBound(vector<process>& info,ofstream& line_graph_stream,ofstream& 
         line_graph_stream << ans[i].BT << ",";
         line_graph_stream << ans[i].WT << ",";
         line_graph_stream << ans[i].TAT << "\n";
+
+        stack_bar_graph_stream << ans[i].name << ",";
+        stack_bar_graph_stream << ans[i].BT << ",";
+        stack_bar_graph_stream << ans[i].WT << "\n";
     }
 
     for(int i=0;i<tempvector.size();i++){
@@ -160,7 +164,7 @@ void handleCPUBound(vector<process>& info,ofstream& line_graph_stream,ofstream& 
     // cout << avg_ct << " " << avg_rt << " " << avg_wt << " " << avg_tat << endl;
 }
 
-void handleIOBound(vector<process>& info,ofstream& line_graph_stream,ofstream& gant_chart_stream){
+void handleIOBound(vector<process>& info,ofstream& line_graph_stream,ofstream& gant_chart_stream,ofstream& stack_bar_graph_stream){
     int num_process = info.size();
     for(int i=0;i<num_process;i++){
         info[i].CT=info[i].AT+info[i].BT;
@@ -183,6 +187,10 @@ void handleIOBound(vector<process>& info,ofstream& line_graph_stream,ofstream& g
         gant_chart_stream << 0 << ",";
         gant_chart_stream << info[i].AT << ",";
         gant_chart_stream << info[i].CT << "\n";
+
+        stack_bar_graph_stream << info[i].name << ",";
+        stack_bar_graph_stream << info[i].BT << ",";
+        stack_bar_graph_stream << info[i].WT << "\n";
     }
 
 }
@@ -197,13 +205,13 @@ int main(int argc,char* argv[])
     #endif
 
     vector<process> cpu_bound_processes,io_bound_processes;
-    ofstream line_graph_stream,gant_chart_stream;
+    ofstream line_graph_stream,gant_chart_stream,stack_bar_graph_stream;
     
     process temp;
     
     line_graph_stream.open("srtf_line.csv", fstream::out);
     gant_chart_stream.open("srtf_gant.csv",fstream::out);
-    // stack_bar_graph_stream.open("sjf_stack_bar.csv",fstream::out);// stack_bar_graph_stream.open("sjf_stack_bar.csv",fstream::out);
+    stack_bar_graph_stream.open("srtf_stack_bar.csv",fstream::out);
     
 
     // reading input from text file
@@ -240,11 +248,11 @@ int main(int argc,char* argv[])
     }
   
     // reading input from text file
-    handleCPUBound(cpu_bound_processes,line_graph_stream,gant_chart_stream);
-    handleIOBound(io_bound_processes,line_graph_stream,gant_chart_stream);
+    handleCPUBound(cpu_bound_processes,line_graph_stream,gant_chart_stream,stack_bar_graph_stream);
+    handleIOBound(io_bound_processes,line_graph_stream,gant_chart_stream,stack_bar_graph_stream);
 
     line_graph_stream.close();
     gant_chart_stream.close();
-    // stack_bar_graph_stream.close();
+    stack_bar_graph_stream.close();
     return 0;
 }
