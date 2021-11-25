@@ -6,9 +6,7 @@
 #include <climits>
 #include <algorithm>
 #include <queue>
-#include <random>
 #include <fstream>
-#include <time.h>
 #include <string>
 #include <sstream>
 #include <bits/stdc++.h>
@@ -29,6 +27,7 @@ struct process
     int PREV_ARRIVAL_TIME;  // Useful for gant chart
     bool first_exe; //tells whether it is first execution of process or not
 };
+
 bool cmp_min(process &one, process &two)
 {
     if (one.AT == two.AT)
@@ -57,7 +56,7 @@ struct CompareProcessMin
     }
 };
 
-void handleCPUBound(vector<process>& info,ofstream& bar_graph_stream,ofstream& other_graphs_stream){
+void handleCPUBound(vector<process>& info,ofstream& line_graph_stream,ofstream& gant_chart_stream){
     int num_process = info.size();
 
     unordered_map<int,int> procidToInfoInd;
@@ -125,25 +124,25 @@ void handleCPUBound(vector<process>& info,ofstream& bar_graph_stream,ofstream& o
     }
     tempvector.push_back(vector<int>{prev_proc_id,info[procidToInfoInd[prev_proc_id]].PREV_ARRIVAL_TIME,current_time});
 
-    // cout << "PID\tAT\tBT\tCT\tWT\tTAT\n";
+    cout << "PID\tAT\tBT\tCT\tWT\tTAT\n";
     for(int i=0;i<ans.size();i++){
-        // printf("%d\t%d\t%d\t%d\t%d\t%d\n",ans[i].P_ID,ans[i].AT,ans[i].BT,ans[i].CT,ans[i].WT,ans[i].TAT);
-        bar_graph_stream << ans[i].P_ID << ",";
-        bar_graph_stream << ans[i].name << ",";    
-        bar_graph_stream << 1 << ",";
-        bar_graph_stream << ans[i].CT << ",";
-        bar_graph_stream << ans[i].BT << ",";
-        bar_graph_stream << ans[i].WT << ",";
-        bar_graph_stream << ans[i].TAT << "\n";
+        printf("%d\t%d\t%d\t%d\t%d\t%d\n",ans[i].P_ID,ans[i].AT,ans[i].BT,ans[i].CT,ans[i].WT,ans[i].TAT);
+        line_graph_stream << ans[i].P_ID << ",";
+        line_graph_stream << ans[i].name << ",";    
+        line_graph_stream << 1 << ",";
+        line_graph_stream << ans[i].CT << ",";
+        line_graph_stream << ans[i].BT << ",";
+        line_graph_stream << ans[i].WT << ",";
+        line_graph_stream << ans[i].TAT << "\n";
     }
 
     for(int i=0;i<tempvector.size();i++){
         // cout << tempvector[i][0] << " " << tempvector[i][1] << " " << tempvector[i][2] << "\n";
-        other_graphs_stream << tempvector[i][0] << ",";
-        other_graphs_stream << info[procidToInfoInd[tempvector[i][0]]].name << ",";
-        other_graphs_stream << 1 << ",";
-        other_graphs_stream << tempvector[i][1] << ",";
-        other_graphs_stream << tempvector[i][2] << "\n";
+        gant_chart_stream << tempvector[i][0] << ",";
+        gant_chart_stream << info[procidToInfoInd[tempvector[i][0]]].name << ",";
+        gant_chart_stream << 1 << ",";
+        gant_chart_stream << tempvector[i][1] << ",";
+        gant_chart_stream << tempvector[i][2] << "\n";
     }
 
     double avg_tat = 0, avg_rt = 0, avg_wt = 0, avg_ct = 0;
@@ -161,7 +160,7 @@ void handleCPUBound(vector<process>& info,ofstream& bar_graph_stream,ofstream& o
     // cout << avg_ct << " " << avg_rt << " " << avg_wt << " " << avg_tat << endl;
 }
 
-void handleIOBound(vector<process>& info,ofstream& bar_graph_stream,ofstream& other_graphs_stream){
+void handleIOBound(vector<process>& info,ofstream& line_graph_stream,ofstream& gant_chart_stream){
     int num_process = info.size();
     for(int i=0;i<num_process;i++){
         info[i].CT=info[i].AT+info[i].BT;
@@ -171,19 +170,19 @@ void handleIOBound(vector<process>& info,ofstream& bar_graph_stream,ofstream& ot
     // cout << "PID\tNAME\t\t\tAT\tBT\tCT\tWT\tTAT\n";
     for(int i=0;i<info.size();i++){
         // printf("%d\t%s\t\t\t%d\t%d\t%d\t%d\t%d\n",info[i].P_ID,info[i].name,info[i].AT,info[i].BT,info[i].CT,info[i].WT,info[i].TAT);
-        bar_graph_stream << info[i].P_ID << ",";
-        bar_graph_stream << info[i].name << ",";    
-        bar_graph_stream << 0 << ",";
-        bar_graph_stream << info[i].CT << ",";
-        bar_graph_stream << info[i].BT << ",";
-        bar_graph_stream << info[i].WT << ",";
-        bar_graph_stream << info[i].TAT << "\n";
+        line_graph_stream << info[i].P_ID << ",";
+        line_graph_stream << info[i].name << ",";    
+        line_graph_stream << 0 << ",";
+        line_graph_stream << info[i].CT << ",";
+        line_graph_stream << info[i].BT << ",";
+        line_graph_stream << info[i].WT << ",";
+        line_graph_stream << info[i].TAT << "\n";
 
-        other_graphs_stream << info[i].P_ID << ",";
-        other_graphs_stream << info[i].name << ",";
-        other_graphs_stream << 0 << ",";
-        other_graphs_stream << info[i].AT << ",";
-        other_graphs_stream << info[i].CT << "\n";
+        gant_chart_stream << info[i].P_ID << ",";
+        gant_chart_stream << info[i].name << ",";
+        gant_chart_stream << 0 << ",";
+        gant_chart_stream << info[i].AT << ",";
+        gant_chart_stream << info[i].CT << "\n";
     }
 
 }
@@ -198,12 +197,13 @@ int main(int argc,char* argv[])
     #endif
 
     vector<process> cpu_bound_processes,io_bound_processes;
-    ofstream bar_graph_stream,other_graphs_stream;
+    ofstream line_graph_stream,gant_chart_stream;
     
     process temp;
     
-    bar_graph_stream.open("srtf_bar.csv", fstream::out);
-    other_graphs_stream.open("srtf_other.csv",fstream::out);
+    line_graph_stream.open("srtf_line.csv", fstream::out);
+    gant_chart_stream.open("srtf_gant.csv",fstream::out);
+    // stack_bar_graph_stream.open("sjf_stack_bar.csv",fstream::out);// stack_bar_graph_stream.open("sjf_stack_bar.csv",fstream::out);
     
 
     // reading input from text file
@@ -238,14 +238,13 @@ int main(int argc,char* argv[])
             cpu_bound_processes.push_back(temp);
         }
     }
-    // for(int i=0;i<cpu_bound_processes.size();i++){
-    //     cout << cpu_bound_processes[i].P_ID << " " << cpu_bound_processes[i].name << " " << cpu_bound_processes[i].AT << " " << cpu_bound_processes[i].BT << endl;
-    // }
+  
     // reading input from text file
-    handleCPUBound(cpu_bound_processes,bar_graph_stream,other_graphs_stream);
-    handleIOBound(io_bound_processes,bar_graph_stream,other_graphs_stream);
+    handleCPUBound(cpu_bound_processes,line_graph_stream,gant_chart_stream);
+    handleIOBound(io_bound_processes,line_graph_stream,gant_chart_stream);
 
-    bar_graph_stream.close();
-    other_graphs_stream.close();
+    line_graph_stream.close();
+    gant_chart_stream.close();
+    // stack_bar_graph_stream.close();
     return 0;
 }

@@ -6,15 +6,11 @@
 #include <climits>
 #include <algorithm>
 #include <queue>
-#include <random>
 #include <fstream>
-#include <time.h>
 #include <string>
 #include <sstream>
 
 using namespace std;
-#define deb(x) cout << #x << " : " << x << "\n";
-#define msg(x) cout << x;
 
 struct process
 {
@@ -58,7 +54,7 @@ struct CompareProcessMin
 };
 
 
-void handleCPUBound(vector<process>& info,ofstream& bar_graph_stream,ofstream& other_graphs_stream){
+void handleCPUBound(vector<process>& info,ofstream& line_graph_stream,ofstream& gant_chart_stream){
     int num_process = info.size();
     process temp;
     int current_time = 0;
@@ -91,22 +87,22 @@ void handleCPUBound(vector<process>& info,ofstream& bar_graph_stream,ofstream& o
         }
     }
 
-    // cout << "PID\tNAME\t\tAT\tBT\tCT\tWT\tTAT\n";
+    cout << "PID\tNAME\t\tAT\tBT\tCT\tWT\tTAT\n";
     for(int i=0;i<ans.size();i++){
-        // printf("%d\t%s\t\t%d\t%d\t%d\t%d\t%d\n",ans[i].P_ID,ans[i].name,ans[i].AT,ans[i].BT,ans[i].CT,ans[i].WT,ans[i].TAT);
-        bar_graph_stream << ans[i].P_ID << ",";
-        bar_graph_stream << ans[i].name << ",";    
-        bar_graph_stream << 1 << ",";
-        bar_graph_stream << ans[i].CT << ",";
-        bar_graph_stream << ans[i].BT << ",";
-        bar_graph_stream << ans[i].WT << ",";
-        bar_graph_stream << ans[i].TAT << "\n";
+        printf("%d\t%s\t\t%d\t%d\t%d\t%d\t%d\n",ans[i].P_ID,ans[i].name,ans[i].AT,ans[i].BT,ans[i].CT,ans[i].WT,ans[i].TAT);
+        line_graph_stream << ans[i].P_ID << ",";
+        line_graph_stream << ans[i].name << ",";    
+        line_graph_stream << 1 << ",";
+        line_graph_stream << ans[i].RT << ",";
+        line_graph_stream << ans[i].WT << ",";
+        line_graph_stream << ans[i].CT << ",";
+        line_graph_stream << ans[i].TAT << "\n";
 
-        other_graphs_stream << ans[i].P_ID << ",";
-        other_graphs_stream << ans[i].name << ",";
-        other_graphs_stream << 1 << ",";
-        other_graphs_stream << ans[i].AT << ",";
-        other_graphs_stream << ans[i].CT << "\n";
+        gant_chart_stream << ans[i].P_ID << ",";
+        gant_chart_stream << ans[i].name << ",";
+        gant_chart_stream << 1 << ",";
+        gant_chart_stream << ans[i].AT << ",";
+        gant_chart_stream << ans[i].CT << "\n";
     }
 
     double avg_tat = 0, avg_rt = 0, avg_wt = 0, avg_ct = 0;
@@ -122,13 +118,9 @@ void handleCPUBound(vector<process>& info,ofstream& bar_graph_stream,ofstream& o
     avg_wt /= ans.size();
     avg_tat /= ans.size();
     // cout << avg_ct << " " << avg_rt << " " << avg_wt << " " << avg_tat << endl;
-    
-    
-    // writing to file pending
-
 }
 
-void handleIOBound(vector<process>& info,ofstream& bar_graph_stream,ofstream& other_graphs_stream){
+void handleIOBound(vector<process>& info,ofstream& line_graph_stream,ofstream& gant_chart_stream){
     int num_process = info.size();
     for(int i=0;i<num_process;i++){
         info[i].CT=info[i].AT+info[i].BT;
@@ -138,19 +130,19 @@ void handleIOBound(vector<process>& info,ofstream& bar_graph_stream,ofstream& ot
     // cout << "PID\tNAME\t\t\tAT\tBT\tCT\tWT\tTAT\n";
     for(int i=0;i<info.size();i++){
         // printf("%d\t%s\t\t\t%d\t%d\t%d\t%d\t%d\n",info[i].P_ID,info[i].name,info[i].AT,info[i].BT,info[i].CT,info[i].WT,info[i].TAT);
-        bar_graph_stream << info[i].P_ID << ",";
-        bar_graph_stream << info[i].name << ",";    
-        bar_graph_stream << 0 << ",";
-        bar_graph_stream << info[i].CT << ",";
-        bar_graph_stream << info[i].BT << ",";
-        bar_graph_stream << info[i].WT << ",";
-        bar_graph_stream << info[i].TAT << "\n";
+        line_graph_stream << info[i].P_ID << ",";
+        line_graph_stream << info[i].name << ",";    
+        line_graph_stream << 0 << ",";
+        line_graph_stream << info[i].RT << ",";
+        line_graph_stream << info[i].WT << ",";
+        line_graph_stream << info[i].CT << ",";
+        line_graph_stream << info[i].TAT << "\n";
 
-        other_graphs_stream << info[i].P_ID << ",";
-        other_graphs_stream << info[i].name << ",";
-        other_graphs_stream << 0 << ",";
-        other_graphs_stream << info[i].AT << ",";
-        other_graphs_stream << info[i].CT << "\n";
+        gant_chart_stream << info[i].P_ID << ",";
+        gant_chart_stream << info[i].name << ",";
+        gant_chart_stream << 0 << ",";
+        gant_chart_stream << info[i].AT << ",";
+        gant_chart_stream << info[i].CT << "\n";
     }
 
 }
@@ -165,14 +157,14 @@ int main(int argc,char* argv[])
         freopen("err.txt","w",stderr);
     #endif
 
-    srand(time(NULL));
     vector<process> cpu_bound_processes,io_bound_processes;
-    ofstream bar_graph_stream,other_graphs_stream;
+    ofstream line_graph_stream,gant_chart_stream;
     
     process temp;
     
-    bar_graph_stream.open("sjf_bar.csv", fstream::out);
-    other_graphs_stream.open("sjf_other.csv",fstream::out);
+    line_graph_stream.open("sjf_line.csv", fstream::out);
+    gant_chart_stream.open("sjf_gant.csv",fstream::out);
+    // stack_bar_graph_stream.open("sjf_stack_bar.csv",fstream::out);
     
 
     // reading input from text file
@@ -206,10 +198,11 @@ int main(int argc,char* argv[])
     }
 
     // reading input from text file
-    handleCPUBound(cpu_bound_processes,bar_graph_stream,other_graphs_stream);
-    handleIOBound(io_bound_processes,bar_graph_stream,other_graphs_stream);
+    handleCPUBound(cpu_bound_processes,line_graph_stream,gant_chart_stream);
+    handleIOBound(io_bound_processes,line_graph_stream,gant_chart_stream);
 
-    bar_graph_stream.close();
-    other_graphs_stream.close();
+    line_graph_stream.close();
+    gant_chart_stream.close();
+    // stack_bar_graph_stream.close();
     return 0;
 }
