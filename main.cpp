@@ -24,7 +24,7 @@ typedef struct INODE{
 //DISK BLOCK STRUCT
 typedef struct DATA_BLOCK{
     int next_data_block_num;     // 4 BYTES
-    char data[4096];             // 4096 BYTES (4KB)
+    char data[512];             // 512 BYTES
 }DATA_BLOCK;
 
 
@@ -58,6 +58,7 @@ void create_disk(){
         inode_array[i].starting_disk_block=i;
         inode_array[i].ending_disk_block=-1;
         inode_array[i].mode_opened='r';
+        inode_bitmap[i]=false;
     }
 
     // initialize disk block array
@@ -65,34 +66,30 @@ void create_disk(){
     for(i=0;i<new_disk_sb.number_of_data_blocks;i++){
         strcpy(disk_blocks_array[i].data,"empty");
         disk_blocks_array[i].next_data_block_num=i;
+        disk_block_bitmap[i]=false;
     }
 
-    FILE* new_disk_data_fp = fopen("new_disk_data.txt","w+");
+    FILE* new_disk_data_fp = fopen("new_disk_data","w");
 
     // write super block
     fwrite(&new_disk_sb,sizeof(S),1,new_disk_data_fp);
 
+
     // write inode bitmap
-    for(int i=0;i<new_disk_sb.number_of_inodes;i++){
-        inode_bitmap[i]=false;
-        fwrite(&inode_bitmap[i],sizeof(bool),1,new_disk_data_fp);
-    }
+    fwrite(inode_bitmap,sizeof(bool),new_disk_sb.number_of_inodes,new_disk_data_fp);
+
 
     // write disk_block_arr bitmap
-    for(int i=0;i<new_disk_sb.number_of_data_blocks;i++){
-        disk_block_bitmap[i]=false;
-        fwrite(&disk_block_bitmap[i],sizeof(bool),1,new_disk_data_fp);
-    }
+     fwrite(disk_block_bitmap,sizeof(bool),new_disk_sb.number_of_data_blocks,new_disk_data_fp);
         
 
     // write inode metada
-    for(i=0;i<new_disk_sb.number_of_inodes;i++)
-        fwrite(&inode_array[i],sizeof(INODE),1,new_disk_data_fp);
+    fwrite(inode_array,sizeof(INODE),new_disk_sb.number_of_inodes,new_disk_data_fp);
 
 
-    // write disk block array metadata
-    for(i=0;i<new_disk_sb.number_of_data_blocks;i++)
-        fwrite(&disk_blocks_array[i],sizeof(DATA_BLOCK),1,new_disk_data_fp);
+    // // write disk block array metadata
+    // fwrite(disk_blocks_array,sizeof(DATA_BLOCK),new_disk_sb.number_of_data_blocks,new_disk_data_fp);
+    
 
     fclose(new_disk_data_fp);
 
@@ -100,24 +97,25 @@ void create_disk(){
 
 
 void print_fs_info(S s,bool* inode_bitmap, bool* disk_block_bitmap,INODE* inode_array,DATA_BLOCK* disk_block_arr){
+
     printf("number of inodes - %d\n",s.number_of_inodes);
     printf("number of data blocks - %d\n",s.number_of_data_blocks);
     
     for(int i=0;i<s.number_of_inodes;i++)
-        cout << inode_bitmap[i]<< " ";
-    cout << endl;
+        cout << inode_bitmap[i]<< " " << flush;
+    cout << endl << flush;
 
     for(int i=0;i<s.number_of_data_blocks;i++)
-        cout << disk_block_bitmap[i] << " ";
-    cout << endl;
+        cout << disk_block_bitmap[i] << " " << flush;
+    cout << endl << flush;
 
     for(int i=0;i<s.number_of_inodes;i++)
-        cout << inode_array[i].starting_disk_block << "," << inode_array[i].mode_opened << " ";
-    cout << endl;
+        cout << inode_array[i].starting_disk_block << "," << inode_array[i].mode_opened << " " << flush;
+    cout << endl << flush;
 
     for(int i=0;i<s.number_of_data_blocks;i++)
-        cout << disk_block_arr[i].next_data_block_num << " ";
-    cout << endl;
+        cout << disk_block_arr[i].next_data_block_num << " " << flush;
+    cout << endl << flush;
 
 }
 
@@ -132,18 +130,18 @@ void mount_disk(){
 
     bool *inode_bitmap,*disk_block_bitmap;
 
-    int number_of_inodes = new_disk_sb.number_of_inodes;
-    int number_of_data_blocks = new_disk_sb.number_of_data_blocks;
 
-    inode_bitmap = (bool*)malloc(sizeof(bool)*number_of_inodes);
-    disk_block_bitmap = (bool*)malloc(sizeof(bool)*number_of_data_blocks);
-    
-    int i;
-
-    FILE* new_disk_data_fp = fopen("new_disk_data.txt","r");
-
+    FILE* new_disk_data_fp = fopen("new_disk_data","r");
     // read super block
     fread(&new_disk_sb,sizeof(S),1,new_disk_data_fp);
+
+    int numberofinodes = new_disk_sb.number_of_inodes;
+    int numberofdatablocks = new_disk_sb.number_of_data_blocks;
+
+    inode_bitmap = (bool*)malloc(sizeof(bool)*numberofinodes);
+    disk_block_bitmap = (bool*)malloc(sizeof(bool)*numberofdatablocks);
+    
+    int i;
 
 
     for(int i=0;i<new_disk_sb.number_of_inodes;i++)
@@ -173,6 +171,7 @@ void close_disk();
 
 
 int main(){
+    cout << sizeof(S) << " " << sizeof(INODE) << " " << sizeof(DATA_BLOCK) << endl;
     create_disk();
     mount_disk();
 }
