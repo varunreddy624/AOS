@@ -1,0 +1,8 @@
+0,Iapache,I/O-bound,0,1
+1,Ibash,I/O-bound,1,4
+2,Imozilla,I/O-bound,2,8
+3,Ccpu,CPU-bound,2,6
+4,Cgcc,CPU-bound,5,2
+5,Cspice,CPU-bound,1,8
+6,Cmysql,CPU-bound,0,3
+7,Csim,CPU-bound,4,4

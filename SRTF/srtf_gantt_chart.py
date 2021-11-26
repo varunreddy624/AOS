@@ -1,21 +1,24 @@
 import matplotlib.pyplot as plt
-import csv
+import csv, operator
+import os
+
+data = csv.reader(open('srtf_gantt.csv'),delimiter=',')
+data = sorted(data, key=operator.itemgetter(0))
 max_x_value = 0
 max_y_value = 0
 fig, gnt = plt.subplots()
 li = []
-with open('sjf_gantt.csv', newline='') as csvfile:
-    spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
-    for row in spamreader:
-        max_y_value = max_y_value+1
-        if int(row[2]) == int(1):
-            li.append(row)
-            if max_x_value < int(row[4]):
-                max_x_value = int(row[4])
-        else:
-            li.append(row)
-            if max_x_value < int(row[4]):
-                max_x_value = int(row[4])
+
+for row in data:
+    max_y_value = max_y_value+1
+    if int(row[2]) == int(1):
+        li.append(row)
+        if max_x_value < int(row[4]):
+            max_x_value = int(row[4])
+    else:
+        li.append(row)
+        if max_x_value < int(row[4]):
+            max_x_value = int(row[4])
 # Setting Y-axis limits
 gnt.set_ylim(0, max_y_value*4)
 # Setting X-axis limits
@@ -27,6 +30,7 @@ a = max_y_value*3+10
 name = []
 heights = []
 visited = []
+a = a - 5
 for x in li:
     visited.append(0)
 for i in range(len(li)):
@@ -59,5 +63,5 @@ for i in range(len(li)):
 gnt.set_yticks(heights)
 gnt.set_yticklabels(name)
 gnt.grid(True)
-plt.savefig("sjf_gantt.png")
-plt.show()
+plt.title("Gantt Chart of SRTF")
+plt.savefig("srtf_gantt.png")

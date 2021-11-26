@@ -1,5 +1,0 @@
-1,Iapache,CPU-bound,2,6
-2,Ibash,CPU-bound,5,2
-3,Imozilla,CPU-bound,1,8
-4,Ccpu,CPU-bound,0,3
-5,Cgcc,CPU-bound,4,4
