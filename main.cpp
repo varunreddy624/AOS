@@ -16,6 +16,7 @@ typedef struct S{
 typedef struct INODE{
     int starting_disk_block;            // 4 BYTES
     int ending_disk_block;              // 4 BYTES
+    char mode_opened;                   // 1 BYTE
     char name[40];                      // 40 BYTES
 }INODE;
 
@@ -56,6 +57,7 @@ void create_disk(){
         strcpy(inode_array[i].name,"");
         inode_array[i].starting_disk_block=i;
         inode_array[i].ending_disk_block=-1;
+        inode_array[i].mode_opened='r';
     }
 
     // initialize disk block array
@@ -110,7 +112,7 @@ void print_fs_info(S s,bool* inode_bitmap, bool* disk_block_bitmap,INODE* inode_
     cout << endl;
 
     for(int i=0;i<s.number_of_inodes;i++)
-        cout << inode_array[i].starting_disk_block << " ";
+        cout << inode_array[i].starting_disk_block << "," << inode_array[i].mode_opened << " ";
     cout << endl;
 
     for(int i=0;i<s.number_of_data_blocks;i++)
