@@ -44,6 +44,8 @@ class DISK{
 
     unordered_map<string,int> fileNameToInodeNum;
 
+    unordered_set<string> openedFiles;
+
 
 
     DISK(string diskname){
@@ -69,7 +71,7 @@ class DISK{
             inode_array[i].ending_disk_block=-1;
             inode_array[i].mode_opened=' ';
             inode_array[i].size_in_bytes=0;
-            inode_bitmap[i]=false;
+            inode_bitmap[i]=true;
         }
 
         // initialize disk block array
@@ -77,7 +79,7 @@ class DISK{
         for(i=0;i<new_disk_sb.number_of_data_blocks;i++){
             strcpy(disk_blocks_array[i].data,"empty");
             disk_blocks_array[i].next_data_block_num=-1;
-            disk_block_bitmap[i]=false;
+            disk_block_bitmap[i]=true;
         }
 
         unmount_disk();
@@ -173,9 +175,78 @@ class DISK{
 
     }
 
+    int getFirstFreeInode(){
+        for(int i=0;i<new_disk_sb.number_of_inodes;i++){
+            if(inode_bitmap[i]){
+                inode_bitmap[i]=false;
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    int getFirstFreeDiskBlock(){
+        for(int i=0;i<new_disk_sb.number_of_data_blocks;i++){
+            if(disk_block_bitmap[i]){
+                disk_block_bitmap[i]=false;
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    void create_file(string filename){
+        if(fileNameToInodeNum.find(filename)!=fileNameToInodeNum.end()){
+            printf("file name already exists; enter proper file name\n");
+            return ;
+        }
+        else{
+            int firstFreeInode = getFirstFreeInode();
+            fileNameToInodeNum.insert(make_pair(filename,firstFreeInode));
+            strcpy(inode_array[firstFreeInode].name,filename.c_str());
+            int firstFreeBlock = getFirstFreeDiskBlock();
+            cout << firstFreeInode << " " << firstFreeBlock << endl;
+            inode_array[firstFreeInode].starting_disk_block = firstFreeBlock;
+            inode_array[firstFreeInode].ending_disk_block = firstFreeBlock;
+            printf("file creation successfull\n");
+        }
+    }
+
+    void open_file(string filename,char mode){
+        if(fileNameToInodeNum.find(filename)==fileNameToInodeNum.end()){
+            printf("file name doesn't exists; enter proper file name\n");
+            return ;
+        }
+        else{
+            if(openedFiles.find(filename)!=openedFiles.end()){
+                printf("file is already opened; close it first\n");
+                return ;
+            }   
+            else{
+                int inodeOfFile = fileNameToInodeNum[filename];
+                inode_array[inodeOfFile].mode_opened=mode;
+                openedFiles.insert(filename);
+                printf("file opened successfull\n");
+            }
+        }
+    }
+
+    void list_files(){
+        for(auto it=fileNameToInodeNum.begin();it!=fileNameToInodeNum.end();it++){
+            cout << it->first << endl;
+        }
+    }
+
+    void list_opened_files(){
+        for(auto it=openedFiles.begin();it!=openedFiles.end();it++){
+            cout << (*it) << " opened in " << inode_array[fileNameToInodeNum[*it]].mode_opened << endl;
+        }
+    }
+
     void handleMenu(){
         int choice;
-        string diskname;
+        string filename;
+        char mode;
         while(1){
             printf("file handling menu\n");
             printf("1. create file\n");
@@ -186,12 +257,32 @@ class DISK{
             printf("6. close file\n");
             printf("7. delete file\n");
             printf("8. list of files\n");
-            printf("9. unmount disk\n");
+            printf("9. list of opened files\n");
+            printf("10. unmount disk\n");
             cin >> choice;
             if(choice==1){
-
+                printf("enter file name\n");
+                cin >> filename;
+                create_file(filename);
+            }
+            else if(choice==2){
+                printf("enter file name\n");
+                cin >> filename;
+                printf("enter mode r-read, w-write, a-append\n");
+                cin >> mode;
+                if(mode!='r' && mode!='w' && mode!='a')
+                    printf("wrong option entered for mode; enter valid value\n");
+                
+                else
+                    open_file(filename,mode);
+            }
+            else if(choice==8){
+                list_files();
             }
             else if(choice==9){
+                list_opened_files();
+            }
+            else if(choice==10){
                 unmount_disk();
                 printf("disk unmounted successfully\n");
                 return ;
@@ -221,8 +312,10 @@ int main(){
         if(choice==1){
             printf("enter disk name\n");
             cin >> diskname;
-            if(diskNameToDiskObj.find(diskname)!=diskNameToDiskObj.end())
+            if(diskNameToDiskObj.find(diskname)!=diskNameToDiskObj.end()){
                 printf("disk name already exists; give new disk name\n");
+                continue;
+            }
             
             else{
                 DISK d = DISK(diskname);
@@ -235,8 +328,10 @@ int main(){
         else if(choice==2){
             printf("enter disk name\n");
             cin >> diskname;
-            if(diskNameToDiskObj.find(diskname)==diskNameToDiskObj.end())
+            if(diskNameToDiskObj.find(diskname)==diskNameToDiskObj.end()){
                 printf("disk name doesn't exist; give correct disk name\n");
+                continue;
+            }
             
             else{
                 DISK d = (diskNameToDiskObj.find(diskname))->second;
